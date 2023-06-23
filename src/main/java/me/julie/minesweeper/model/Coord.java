@@ -8,7 +8,7 @@ public class Coord {
     private final int row;
     private final boolean mine; // is there a mine?
     private final int num; // num of mines surrounding coord
-    private final boolean clicked; // spot already clicked?
+    private boolean clicked; // spot already clicked?
     private boolean flagged; // spot already flagged?
 
     public Coord(int col, int row, boolean mine, int num, boolean clicked, boolean flagged) {
@@ -46,5 +46,9 @@ public class Coord {
 
     public void setFlagged(boolean flag) {
         this.flagged = flag;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
     }
 }

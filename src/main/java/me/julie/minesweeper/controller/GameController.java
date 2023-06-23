@@ -120,6 +120,86 @@ public class GameController {
     }
 
     /**
+     * make the minesweeper grid
+     */
+    public void makeGrid() {
+        for (int i = 8; i < cols; i++) {
+            displayBoard.addColumn(i);
+        }
+        for (int i = 8; i < rows; i++) {
+            displayBoard.addRow(i);
+        }
+
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                Coord coord = new Coord(i, j, false, 0, false, false);
+                mineGrid[i][j] = coord;
+                Button button = new Button();
+                button.setPrefWidth(30);
+                button.setPrefHeight(30);
+                button.setOnMouseClicked(e -> {
+                    if (e.getButton().equals(MouseButton.PRIMARY)) {
+                        handleLeftClick(coord, button);
+                    } else {
+                        handleRightClick(coord, button);
+                    }
+                });
+                displayBoard.add(button, i, j);
+            }
+        }
+    }
+
+    /**
+     * Handles mouse left click.
+     * Uncovers coord
+     *
+     * @param coord button coordinate
+     */
+    private void handleLeftClick(Coord coord, Button button) {
+        if (coord.getClicked()) { // already uncovered coord
+            return;
+        }
+        int col = coord.getCol();
+        int row = coord.getRow();
+        if (mineGrid[col][row].getMine()) {
+            endGame();
+        }
+        coord.setClicked(true);
+        button.setText(String.valueOf(coord.getNum()));
+        // if coord.getNum() is 0, uncover surrounding 0s
+
+        displayBoard.add(button, col, row);
+        checkEndGame();
+    }
+
+    /**
+     * Handles mouse right click.
+     * Places flag
+     *
+     * @param coord button coordinate
+     */
+    private void handleRightClick(Coord coord, Button button) {
+        int col = coord.getCol();
+        int row = coord.getRow();
+        if (coord.getFlagged()) { // already flagged- remove flag
+            button.setText("");
+            coord.setFlagged(false);
+            minesLeft++;
+            minesLeftLabel.setText(String.valueOf(minesLeft));
+        } else {
+            button.setText("X");
+            coord.setFlagged(true);
+        }
+        if (minesLeft == 0) {
+            checkEndGame();
+        } else {
+            minesLeft--;
+            minesLeftLabel.setText(String.valueOf(minesLeft));
+        }
+        displayBoard.add(button, col, row);
+    }
+
+    /**
      * sets numbers/empty cells around mines
      */
     public void restOfGrid() {
@@ -284,85 +364,6 @@ public class GameController {
             }
         }
         minesLeftLabel.setText(String.valueOf(minesLeft));
-    }
-
-    /**
-     * make the minesweeper grid
-     */
-    public void makeGrid() {
-        for (int i = 8; i < cols; i++) {
-            displayBoard.addColumn(i);
-        }
-        for (int i = 8; i < rows; i++) {
-            displayBoard.addRow(i);
-        }
-
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                Coord coord = new Coord(i, j, false, 0, false, false);
-                mineGrid[i][j] = coord;
-                Button button = new Button();
-                button.setPrefWidth(30);
-                button.setPrefHeight(30);
-                button.setOnMouseClicked(e -> {
-                    if (e.getButton().equals(MouseButton.PRIMARY)) {
-                        handleLeftClick(coord, button);
-                    } else {
-                        handleRightClick(coord, button);
-                    }
-                });
-                displayBoard.add(button, i, j);
-            }
-        }
-    }
-
-    /**
-     * Handles mouse left click.
-     * Uncovers coord
-     *
-     * @param coord button coordinate
-     */
-    private void handleLeftClick(Coord coord, Button button) {
-        if (coord.getClicked()) { // already uncovered coord
-            return;
-        }
-        int col = coord.getCol();
-        int row = coord.getRow();
-        if (mineGrid[col][row].getMine()) {
-            endGame();
-        }
-
-        // set button text to coord.getNum()
-
-        // if coord.getNum() is 0, uncover surrounding 0s
-
-        checkEndGame();
-    }
-
-    /**
-     * Handles mouse right click.
-     * Places flag
-     *
-     * @param coord button coordinate
-     */
-    private void handleRightClick(Coord coord, Button button) {
-        int col = coord.getCol();
-        int row = coord.getRow();
-        if (coord.getFlagged()) {
-            // set button text to empty
-            coord.setFlagged(false);
-            minesLeft++;
-            minesLeftLabel.setText(String.valueOf(minesLeft));
-        } else {
-            // set button text to flag
-            coord.setFlagged(true);
-        }
-        if (minesLeft == 0) {
-            checkEndGame();
-        } else {
-            minesLeft--;
-            minesLeftLabel.setText(String.valueOf(minesLeft));
-        }
     }
 
     /**

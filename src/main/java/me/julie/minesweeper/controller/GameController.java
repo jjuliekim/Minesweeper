@@ -25,6 +25,8 @@ public class GameController {
     private Label minesLeftLabel;
     @FXML
     private GridPane displayBoard;
+    @FXML
+    private Label rightLabel;
 
     /**
      * controller for minesweeper application
@@ -33,6 +35,7 @@ public class GameController {
         minesLeft = 0;
         newGameButton = new Button();
         minesLeftLabel = new Label();
+        rightLabel = new Label("--");
         newGameButton.setOnAction(e -> handleNewGame());
         displayBoard = new GridPane();
     }
@@ -87,7 +90,7 @@ public class GameController {
                 if (Integer.parseInt(rowsInput.getText()) < 8 || Integer.parseInt(colsInput.getText()) < 8) {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setHeaderText("Invalid input");
-                    alert.setContentText("Please enter valid displayBoard dimensions");
+                    alert.setContentText("Enter valid minesweeper dimensions");
                     alert.showAndWait();
                     alert.close();
                     displayBoardDimensions();
@@ -156,15 +159,15 @@ public class GameController {
      * @param coord button coordinate
      */
     private void handleLeftClick(Coord coord, Button button) {
-        if (coord.getClicked()) { // already uncovered coord
+        if (coord.getUncovered()) { // already uncovered coord
             return;
         }
         int col = coord.getCol();
         int row = coord.getRow();
         if (mineGrid[col][row].getMine()) {
-            endGame();
+            lostGame();
         }
-        coord.setClicked(true);
+        coord.setUncovered(true);
         button.setText(String.valueOf(coord.getNum()));
         // if coord.getNum() is 0, uncover surrounding 0s
 
@@ -184,12 +187,15 @@ public class GameController {
         if (coord.getFlagged()) { // already flagged- remove flag
             button.setText("");
             coord.setFlagged(false);
+            coord.setUncovered(false);
             minesLeft++;
             minesLeftLabel.setText(String.valueOf(minesLeft));
         } else {
             button.setText("X");
             coord.setFlagged(true);
+            coord.setUncovered(true);
         }
+
         if (minesLeft == 0) {
             checkEndGame();
         } else {
@@ -367,16 +373,54 @@ public class GameController {
     }
 
     /**
-     * game over dialog
+     * game over dialog (lost)
      */
-    private void endGame() {
+    private void lostGame() {
         Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Game Over");
+        dialog.getDialogPane().setContent(new Label("You hit a mine!"));
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.setResultConverter(param -> {
+            if (param == ButtonType.OK) {
+                return 0;
+            } else {
+                return null;
+            }
+        });
+        dialog.showAndWait();
+        rightLabel.setText("--   Click [New] to play again");
+    }
+
+    /**
+     * game over dialog (won)
+     */
+    private void wonGame() {
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Game Over");
+        dialog.getDialogPane().setContent(new Label("You won!"));
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.setResultConverter(param -> {
+            if (param == ButtonType.OK) {
+                return 0;
+            } else {
+                return null;
+            }
+        });
+        dialog.showAndWait();
+        rightLabel.setText("--   Click [New] to play again");
     }
 
     /**
      * checks if the game is over
      */
     private void checkEndGame() {
-
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                if (!mineGrid[i][j].getUncovered()) {
+                    return;
+                }
+            }
+        }
+        wonGame();
     }
 }

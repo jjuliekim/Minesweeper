@@ -8,15 +8,15 @@ public class Coord {
     private final int row;
     private final boolean mine; // is there a mine?
     private final int num; // num of mines surrounding coord
-    private boolean clicked; // spot already clicked?
+    private boolean uncovered; // spot not empty?
     private boolean flagged; // spot already flagged?
 
-    public Coord(int col, int row, boolean mine, int num, boolean clicked, boolean flagged) {
+    public Coord(int col, int row, boolean mine, int num, boolean uncovered, boolean flagged) {
         this.col = col;
         this.row = row;
         this.mine = mine;
         this.num = num;
-        this.clicked = clicked;
+        this.uncovered = uncovered;
         this.flagged = flagged;
     }
 
@@ -36,8 +36,8 @@ public class Coord {
         return num;
     }
 
-    public boolean getClicked() {
-        return clicked;
+    public boolean getUncovered() {
+        return uncovered;
     }
 
     public boolean getFlagged() {
@@ -48,7 +48,7 @@ public class Coord {
         this.flagged = flag;
     }
 
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
+    public void setUncovered(boolean uncovered) {
+        this.uncovered = uncovered;
     }
 }

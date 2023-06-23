@@ -29,7 +29,7 @@
                         </HBox.margin>
                      </Label>
                      <Label fx:id="minesLeftLabel" prefHeight="17.0" />
-                     <Label prefHeight="17.0" prefWidth="10.0" text="--" />
+                     <Label fx:id="rightLabel" prefHeight="17.0" prefWidth="10.0" text="--" />
                   </children>
                   <VBox.margin>
                      <Insets />

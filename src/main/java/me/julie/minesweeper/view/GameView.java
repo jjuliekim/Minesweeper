@@ -16,7 +16,7 @@ public class GameView {
      * constructor for GameView
      */
     public GameView() {
-        this.loader = new FXMLLoader(Main.class.getResource("hello-view.fxml"));
+        this.loader = new FXMLLoader(Main.class.getResource("minesweeper.fxml"));
     }
 
     /**

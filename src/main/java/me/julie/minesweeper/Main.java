@@ -18,12 +18,12 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) {
-        GameView view = new GameView();
+        GameController controller = new GameController();
+        GameView view = new GameView(controller);
         stage.setTitle("Minesweeper");
         stage.setScene(view.load());
-        stage.show();
-        GameController controller = new GameController();
         controller.run();
+        stage.show();
     }
 
     /**

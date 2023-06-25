@@ -1,6 +1,7 @@
 package me.julie.minesweeper.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -8,8 +9,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import me.julie.minesweeper.model.Coord;
 
 import java.util.Random;
@@ -20,11 +20,11 @@ public class GameController {
     private int rows;
     Coord[][] mineGrid;
     @FXML
-    private Button newGameButton;
+    private Button newGameButton = new Button();
     @FXML
-    private Label minesLeftLabel;
+    private Label minesLeftLabel = new Label();
     @FXML
-    private GridPane displayBoard;
+    private GridPane displayBoard = new GridPane();
     @FXML
     private Label rightLabel;
 
@@ -33,17 +33,15 @@ public class GameController {
      */
     public GameController() {
         minesLeft = 0;
-        newGameButton = new Button();
-        minesLeftLabel = new Label();
         rightLabel = new Label("--");
-        newGameButton.setOnAction(e -> handleNewGame());
-        displayBoard = new GridPane();
     }
 
     /**
      * initializes minesweeper game
      */
+    @FXML
     public void run() {
+        newGameButton.setOnAction(e -> handleNewGame());
         displayBoardDimensions();
         placeMines();
         makeGrid();
@@ -54,7 +52,6 @@ public class GameController {
      * starts a new game
      */
     private void handleNewGame() {
-        System.out.println("clicked");
         minesLeft = 0;
         displayBoard = new GridPane();
         run();
@@ -127,19 +124,25 @@ public class GameController {
      */
     public void makeGrid() {
         for (int i = 8; i < cols; i++) {
-            displayBoard.addColumn(i);
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setHgrow(Priority.NEVER);
+            columnConstraints.setMinWidth(30);
+            displayBoard.getColumnConstraints().add(columnConstraints);
         }
         for (int i = 8; i < rows; i++) {
-            displayBoard.addRow(i);
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setVgrow(Priority.NEVER);
+            rowConstraints.setMinHeight(30);
+            displayBoard.getRowConstraints().add(rowConstraints);
         }
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 Coord coord = new Coord(i, j, false, 0, false, false);
                 mineGrid[i][j] = coord;
-                Button button = new Button();
-                button.setPrefWidth(30);
-                button.setPrefHeight(30);
+                Button button = new Button(" ");
+                button.setMinWidth(30);
+                button.setMinHeight(30);
                 button.setOnMouseClicked(e -> {
                     if (e.getButton().equals(MouseButton.PRIMARY)) {
                         handleLeftClick(coord, button);

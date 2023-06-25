@@ -1,7 +1,6 @@
 package me.julie.minesweeper.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -10,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
+import me.julie.minesweeper.Main;
 import me.julie.minesweeper.model.Coord;
 
 import java.util.Random;
@@ -20,28 +20,29 @@ public class GameController {
     private int rows;
     Coord[][] mineGrid;
     @FXML
-    private Button newGameButton = new Button();
+    private Button newGameButton;
     @FXML
-    private Label minesLeftLabel = new Label();
+    private Label minesLeftLabel;
     @FXML
-    private GridPane displayBoard = new GridPane();
+    private GridPane displayBoard;
     @FXML
     private Label rightLabel;
-
-    /**
-     * controller for minesweeper application
-     */
-    public GameController() {
-        minesLeft = 0;
-        rightLabel = new Label("--");
-    }
 
     /**
      * initializes minesweeper game
      */
     @FXML
-    public void run() {
+    public void initialize() {
+        rightLabel.setText("--");
         newGameButton.setOnAction(e -> handleNewGame());
+        minesLeft = 0;
+        run();
+    }
+
+    /**
+     * starts the minesweeper game
+     */
+    public void run() {
         displayBoardDimensions();
         placeMines();
         makeGrid();
@@ -53,8 +54,8 @@ public class GameController {
      */
     private void handleNewGame() {
         minesLeft = 0;
-        displayBoard = new GridPane();
-        run();
+        rightLabel.setText("--");
+        resetBoard();
     }
 
     /**
@@ -104,6 +105,16 @@ public class GameController {
     }
 
     /**
+     * resets the board display to the default
+     */
+    public void resetBoard() {
+        displayBoard.getChildren().clear();
+        displayBoard.getColumnConstraints().clear();
+        displayBoard.getRowConstraints().clear();
+        run();
+    }
+
+    /**
      * place the mines randomly
      */
     public void placeMines() {
@@ -129,6 +140,7 @@ public class GameController {
             columnConstraints.setMinWidth(30);
             displayBoard.getColumnConstraints().add(columnConstraints);
         }
+
         for (int i = 8; i < rows; i++) {
             RowConstraints rowConstraints = new RowConstraints();
             rowConstraints.setVgrow(Priority.NEVER);
@@ -153,6 +165,8 @@ public class GameController {
                 displayBoard.add(button, i, j);
             }
         }
+        Main.getInstance().getStage().sizeToScene();
+        displayBoard.setGridLinesVisible(true);
     }
 
     /**

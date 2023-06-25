@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<Scene xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Scene xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.julie.minesweeper.controller.GameController">
     <AnchorPane fx:id="mainScene">
       <children>
          <VBox alignment="TOP_CENTER">
@@ -40,7 +40,7 @@
                </HBox>
                <GridPane fx:id="displayBoard" gridLinesVisible="true" VBox.vgrow="NEVER">
                  <columnConstraints>
-                     <ColumnConstraints hgrow="ALWAYS" />
+                     <ColumnConstraints hgrow="NEVER" minWidth="30.0" />
                      <ColumnConstraints hgrow="NEVER" minWidth="30.0" />
                      <ColumnConstraints hgrow="NEVER" minWidth="30.0" />
                      <ColumnConstraints hgrow="NEVER" minWidth="30.0" />

@@ -9,6 +9,17 @@ import me.julie.minesweeper.view.GameView;
  * Represents a minesweeper application
  */
 public class Main extends Application {
+    private static Main instance;
+    private Stage stage;
+
+    public static Main getInstance() {
+        return instance;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
     /**
      * starts the GUI for Minesweeper
      * @param stage the primary stage for this application, onto which
@@ -18,12 +29,16 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         GameController controller = new GameController();
         GameView view = new GameView(controller);
         stage.setTitle("Minesweeper");
         stage.setScene(view.load());
-        controller.run();
         stage.show();
+    }
+
+    public Main() {
+        instance = this;
     }
 
     /**

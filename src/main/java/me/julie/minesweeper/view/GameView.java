@@ -18,7 +18,6 @@ public class GameView {
      */
     public GameView(GameController controller) {
         this.loader = new FXMLLoader(Main.class.getResource("minesweeper.fxml"));
-        this.loader.setController(controller);
     }
 
     /**

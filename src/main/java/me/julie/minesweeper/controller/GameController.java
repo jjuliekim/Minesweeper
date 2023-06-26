@@ -244,9 +244,11 @@ public class GameController {
 
                 if (i == 0) { // first column, no left
                     if (j == 0) { // top left corner
+                        assert right != null;
                         if (right.getMine()) { // right
                             numOfMines++;
                         }
+                        assert bottom != null;
                         if (bottom.getMine()) { // bottom
                             numOfMines++;
                         }
@@ -254,6 +256,7 @@ public class GameController {
                             numOfMines++;
                         }
                     } else if (j == rows - 1) { // bottom left corner
+                        assert right != null;
                         if (right.getMine()) { // right
                             numOfMines++;
                         }
@@ -264,12 +267,14 @@ public class GameController {
                             numOfMines++;
                         }
                     } else {
+                        assert right != null;
                         if (right.getMine()) { // right
                             numOfMines++;
                         }
                         if (top.getMine()) { // top
                             numOfMines++;
                         }
+                        assert bottom != null;
                         if (bottom.getMine()) { // bottom
                             numOfMines++;
                         }
@@ -285,6 +290,7 @@ public class GameController {
                         if (left.getMine()) { // left
                             numOfMines++;
                         }
+                        assert bottom != null;
                         if (bottom.getMine()) { // bottom
                             numOfMines++;
                         }
@@ -341,6 +347,7 @@ public class GameController {
                     if (top.getMine()) { // top
                         numOfMines++;
                     }
+                    assert right != null;
                     if (right.getMine()) { // right
                         numOfMines++;
                     }
@@ -354,9 +361,11 @@ public class GameController {
                     if (left.getMine()) { // left
                         numOfMines++;
                     }
+                    assert bottom != null;
                     if (bottom.getMine()) { // bottom
                         numOfMines++;
                     }
+                    assert right != null;
                     if (right.getMine()) { // right
                         numOfMines++;
                     }

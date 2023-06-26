@@ -25,15 +25,12 @@ public class GameController {
     private Label minesLeftLabel;
     @FXML
     private GridPane displayBoard;
-    @FXML
-    private Label rightLabel;
 
     /**
      * initializes minesweeper game
      */
     @FXML
     public void initialize() {
-        rightLabel.setText("--");
         newGameButton.setOnAction(e -> handleNewGame());
         minesLeft = 0;
         run();
@@ -44,8 +41,8 @@ public class GameController {
      */
     public void run() {
         displayBoardDimensions();
-        placeMines();
         makeGrid();
+        placeMines();
         restOfGrid();
     }
 
@@ -54,7 +51,6 @@ public class GameController {
      */
     private void handleNewGame() {
         minesLeft = 0;
-        rightLabel.setText("--");
         resetBoard();
     }
 
@@ -128,6 +124,7 @@ public class GameController {
                 }
             }
         }
+        minesLeftLabel.setText(String.valueOf(minesLeft));
     }
 
     /**
@@ -179,16 +176,13 @@ public class GameController {
         if (coord.getUncovered()) { // already uncovered coord
             return;
         }
-        int col = coord.getCol();
-        int row = coord.getRow();
-        if (mineGrid[col][row].getMine()) {
+        if (mineGrid[coord.getCol()][coord.getRow()].getMine()) {
             lostGame();
         }
         coord.setUncovered(true);
         button.setText(String.valueOf(coord.getNum()));
         // if coord.getNum() is 0, uncover surrounding 0s
 
-        displayBoard.add(button, col, row);
         checkEndGame();
     }
 
@@ -199,8 +193,9 @@ public class GameController {
      * @param coord button coordinate
      */
     private void handleRightClick(Coord coord, Button button) {
-        int col = coord.getCol();
-        int row = coord.getRow();
+        if (coord.getUncovered()) { // already clicked
+            return;
+        }
         if (coord.getFlagged()) { // already flagged- remove flag
             button.setText("");
             coord.setFlagged(false);
@@ -211,15 +206,13 @@ public class GameController {
             button.setText("X");
             coord.setFlagged(true);
             coord.setUncovered(true);
+            minesLeft--;
+            minesLeftLabel.setText(String.valueOf(minesLeft));
         }
 
         if (minesLeft == 0) {
             checkEndGame();
-        } else {
-            minesLeft--;
-            minesLeftLabel.setText(String.valueOf(minesLeft));
         }
-        displayBoard.add(button, col, row);
     }
 
     /**
@@ -386,45 +379,28 @@ public class GameController {
                 mineGrid[i][j] = new Coord(i, j, false, numOfMines, false, false);
             }
         }
-        minesLeftLabel.setText(String.valueOf(minesLeft));
     }
 
     /**
      * game over dialog (lost)
      */
     private void lostGame() {
-        Dialog<Integer> dialog = new Dialog<>();
-        dialog.setTitle("Game Over");
-        dialog.getDialogPane().setContent(new Label("You hit a mine!"));
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        dialog.setResultConverter(param -> {
-            if (param == ButtonType.OK) {
-                return 0;
-            } else {
-                return null;
-            }
-        });
-        dialog.showAndWait();
-        rightLabel.setText("--   Click [New] to play again");
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You hit a mine!");
+        alert.showAndWait();
+        handleNewGame();
     }
 
     /**
      * game over dialog (won)
      */
     private void wonGame() {
-        Dialog<Integer> dialog = new Dialog<>();
-        dialog.setTitle("Game Over");
-        dialog.getDialogPane().setContent(new Label("You won!"));
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        dialog.setResultConverter(param -> {
-            if (param == ButtonType.OK) {
-                return 0;
-            } else {
-                return null;
-            }
-        });
-        dialog.showAndWait();
-        rightLabel.setText("--   Click [New] to play again");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You won!");
+        alert.setContentText("Click [New] to play again");
+        alert.showAndWait();
     }
 
     /**

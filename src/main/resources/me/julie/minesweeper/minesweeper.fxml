@@ -10,7 +10,7 @@
       <children>
          <VBox alignment="TOP_CENTER">
             <children>
-               <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <HBox alignment="CENTER_LEFT" spacing="5.0">
                   <children>
                      <Button fx:id="newGameButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="40.0" text="New">
                         <HBox.margin>
@@ -22,14 +22,14 @@
                            <Insets left="20.0" />
                         </HBox.margin>
                      </Label>
-                     <Label fx:id="minesLeftLabel" prefHeight="17.0" />
+                     <Label fx:id="minesLeftLabel" prefHeight="17.0" text="24" />
                      <Label prefHeight="17.0" prefWidth="10.0" text="--" />
                   </children>
                   <VBox.margin>
                      <Insets />
                   </VBox.margin>
                   <padding>
-                     <Insets bottom="5.0" top="5.0" />
+                     <Insets bottom="2.0" top="7.0" />
                   </padding>
                </HBox>
                <GridPane fx:id="displayBoard" gridLinesVisible="true" VBox.vgrow="NEVER">

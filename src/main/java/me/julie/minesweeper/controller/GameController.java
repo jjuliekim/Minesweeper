@@ -20,6 +20,7 @@ public class GameController {
     private int cols;
     private int rows;
     Coord[][] mineGrid;
+    boolean firstMove;
     @FXML
     private Button newGameButton;
     @FXML
@@ -35,6 +36,7 @@ public class GameController {
         newGameButton.setOnAction(e -> handleNewGame());
         totalMines = 0;
         minesLeft = 0;
+        firstMove = true;
         run();
     }
 
@@ -54,6 +56,7 @@ public class GameController {
     private void handleNewGame() {
         totalMines = 0;
         minesLeft = 0;
+        firstMove = true;
         resetBoard();
     }
 
@@ -121,7 +124,7 @@ public class GameController {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 boolean mine = random.nextBoolean();
-                mineGrid[i][j] = new Coord(i, j, mine, 0, false, false);
+                mineGrid[i][j].setMine(mine);
                 if (mine) {
                     minesLeft++;
                 }
@@ -392,7 +395,6 @@ public class GameController {
                     }
                 }
                 mineGrid[i][j] = new Coord(i, j, mineGrid[i][j].getMine(), numOfMines, false, false);
-                System.out.println(i + ", " + j);
             }
         }
     }

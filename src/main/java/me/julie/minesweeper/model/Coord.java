@@ -6,7 +6,7 @@ package me.julie.minesweeper.model;
 public class Coord {
     private final int col;
     private final int row;
-    private final boolean mine; // is there a mine?
+    private boolean mine; // is there a mine?
     private final int num; // num of mines surrounding coord
     private boolean uncovered; // spot not empty?
     private boolean flagged; // spot already flagged?
@@ -20,12 +20,8 @@ public class Coord {
         this.flagged = flagged;
     }
 
-    public int getCol() {
-        return col;
-    }
-
-    public int getRow() {
-        return row;
+    public void setMine(boolean mine) {
+        this.mine = mine;
     }
 
     public boolean getMine() {

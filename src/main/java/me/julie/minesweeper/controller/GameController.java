@@ -15,6 +15,7 @@ import me.julie.minesweeper.model.Coord;
 import java.util.Random;
 
 public class GameController {
+    private int totalMines;
     private int minesLeft;
     private int cols;
     private int rows;
@@ -32,6 +33,7 @@ public class GameController {
     @FXML
     public void initialize() {
         newGameButton.setOnAction(e -> handleNewGame());
+        totalMines = 0;
         minesLeft = 0;
         run();
     }
@@ -50,6 +52,7 @@ public class GameController {
      * starts a new game
      */
     private void handleNewGame() {
+        totalMines = 0;
         minesLeft = 0;
         resetBoard();
     }
@@ -124,6 +127,7 @@ public class GameController {
                 }
             }
         }
+        totalMines = minesLeft;
         minesLeftLabel.setText(String.valueOf(minesLeft));
     }
 
@@ -152,11 +156,13 @@ public class GameController {
                 Button button = new Button(" ");
                 button.setMinWidth(30);
                 button.setMinHeight(30);
+                int col = i;
+                int row = j;
                 button.setOnMouseClicked(e -> {
                     if (e.getButton().equals(MouseButton.PRIMARY)) {
-                        handleLeftClick(coord, button);
+                        handleLeftClick(mineGrid[col][row], button);
                     } else {
-                        handleRightClick(coord, button);
+                        handleRightClick(mineGrid[col][row], button);
                     }
                 });
                 displayBoard.add(button, i, j);
@@ -176,12 +182,12 @@ public class GameController {
         if (coord.getUncovered()) { // already uncovered coord
             return;
         }
-        if (mineGrid[coord.getCol()][coord.getRow()].getMine()) {
+        if (coord.getMine()) {
             lostGame();
         }
         coord.setUncovered(true);
         button.setText(String.valueOf(coord.getNum()));
-        // if coord.getNum() is 0, uncover surrounding 0s
+        // if coord.getNum() is 0, uncover surrounding cells
 
         checkEndGame();
     }
@@ -199,13 +205,11 @@ public class GameController {
         if (coord.getFlagged()) { // already flagged- remove flag
             button.setText("");
             coord.setFlagged(false);
-            coord.setUncovered(false);
             minesLeft++;
             minesLeftLabel.setText(String.valueOf(minesLeft));
         } else {
             button.setText("X");
             coord.setFlagged(true);
-            coord.setUncovered(true);
             minesLeft--;
             minesLeftLabel.setText(String.valueOf(minesLeft));
         }
@@ -221,10 +225,10 @@ public class GameController {
     public void restOfGrid() {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
-                int numOfMines = 0;
                 if (mineGrid[i][j].getMine()) {
                     continue;
                 }
+                int numOfMines = 0;
                 Coord left = null;
                 Coord right = null;
                 Coord top = null;
@@ -328,9 +332,11 @@ public class GameController {
                     if (left.getMine()) { // left
                         numOfMines++;
                     }
+                    assert bottom != null;
                     if (bottom.getMine()) { // bottom
                         numOfMines++;
                     }
+                    assert right != null;
                     if (right.getMine()) { // right
                         numOfMines++;
                     }
@@ -385,7 +391,8 @@ public class GameController {
                         numOfMines++;
                     }
                 }
-                mineGrid[i][j] = new Coord(i, j, false, numOfMines, false, false);
+                mineGrid[i][j] = new Coord(i, j, mineGrid[i][j].getMine(), numOfMines, false, false);
+                System.out.println(i + ", " + j);
             }
         }
     }
@@ -405,7 +412,7 @@ public class GameController {
      * game over dialog (won)
      */
     private void wonGame() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Game Over");
         alert.setHeaderText("You won!");
         alert.setContentText("Click [New] to play again");
@@ -416,13 +423,16 @@ public class GameController {
      * checks if the game is over
      */
     private void checkEndGame() {
+        int numUncovered = 0;
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
-                if (!mineGrid[i][j].getUncovered()) {
-                    return;
+                if (mineGrid[i][j].getUncovered()) {
+                    numUncovered++;
                 }
             }
         }
-        wonGame();
+        if (numUncovered == (cols * rows) - totalMines) {
+            wonGame();
+        }
     }
 }

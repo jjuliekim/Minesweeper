@@ -27,6 +27,8 @@ public class GameController {
     private Label minesLeftLabel;
     @FXML
     private GridPane displayBoard;
+    @FXML
+    private VBox mainVbox;
 
     /**
      * initializes minesweeper game
@@ -37,6 +39,8 @@ public class GameController {
         totalMines = 0;
         minesLeft = 0;
         firstMove = true;
+        mainVbox.setStyle("-fx-background-color: #99ae68");
+        newGameButton.setFocusTraversable(false);
         run();
     }
 
@@ -57,7 +61,10 @@ public class GameController {
         totalMines = 0;
         minesLeft = 0;
         firstMove = true;
-        resetBoard();
+        displayBoard.getChildren().clear();
+        displayBoard.getColumnConstraints().clear();
+        displayBoard.getRowConstraints().clear();
+        run();
     }
 
     /**
@@ -107,26 +114,18 @@ public class GameController {
     }
 
     /**
-     * resets the board display to the default
-     */
-    public void resetBoard() {
-        displayBoard.getChildren().clear();
-        displayBoard.getColumnConstraints().clear();
-        displayBoard.getRowConstraints().clear();
-        run();
-    }
-
-    /**
      * place the mines randomly
      */
     public void placeMines() {
         Random random = new Random();
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
-                boolean mine = random.nextBoolean();
-                mineGrid[i][j].setMine(mine);
-                if (mine) {
+                int mine = random.nextInt(4);
+                if (mine == 0) {
+                    mineGrid[i][j].setMine(true);
                     minesLeft++;
+                } else {
+                    mineGrid[i][j].setMine(false);
                 }
             }
         }
@@ -154,8 +153,6 @@ public class GameController {
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
-                Coord coord = new Coord(i, j, false, 0, false, false);
-                mineGrid[i][j] = coord;
                 Button button = new Button(" ");
                 button.setMinWidth(30);
                 button.setMinHeight(30);
@@ -168,11 +165,13 @@ public class GameController {
                         handleRightClick(mineGrid[col][row], button);
                     }
                 });
+                button.setStyle("-fx-background-color: #e6f1ce");
                 displayBoard.add(button, i, j);
+                Coord coord = new Coord(i, j, false, 0, false, false, button);
+                mineGrid[i][j] = coord;
             }
         }
         Main.getInstance().getStage().sizeToScene();
-        displayBoard.setGridLinesVisible(true);
     }
 
     /**
@@ -182,16 +181,118 @@ public class GameController {
      * @param coord button coordinate
      */
     private void handleLeftClick(Coord coord, Button button) {
+        if (firstMove) {
+            Coord left = new Coord(0);
+            Coord right = new Coord(0);
+            Coord top = new Coord(0);
+            Coord bottom = new Coord(0);
+            Coord topLeft = new Coord(0);
+            Coord topRight = new Coord(0);
+            Coord bottomLeft = new Coord(0);
+            Coord bottomRight = new Coord(0);
+
+            if (coord.getCol() > 0) {
+                left = mineGrid[coord.getCol() - 1][coord.getRow()];
+            }
+            if (coord.getCol() < cols - 1) {
+                right = mineGrid[coord.getCol() + 1][coord.getRow()];
+            }
+            if (coord.getRow() > 0) {
+                top = mineGrid[coord.getCol()][coord.getRow() - 1];
+            }
+            if (coord.getRow() < rows - 1) {
+                bottom = mineGrid[coord.getCol()][coord.getRow() + 1];
+            }
+            if (coord.getCol() > 0 && coord.getRow() > 0) {
+                topLeft = mineGrid[coord.getCol() - 1][coord.getRow() - 1];
+            }
+            if (coord.getCol() < cols - 1 && coord.getRow() > 0) {
+                topRight = mineGrid[coord.getCol() + 1][coord.getRow() - 1];
+            }
+            if (coord.getCol() > 0 && coord.getRow() < rows - 1) {
+                bottomLeft = mineGrid[coord.getCol() - 1][coord.getRow() + 1];
+            }
+            if (coord.getCol() < cols - 1 && coord.getRow() < rows - 1) {
+                bottomRight = mineGrid[coord.getCol() + 1][coord.getRow() + 1];
+            }
+            int sum = left.getNum() + right.getNum() + top.getNum() + bottom.getNum()
+                      + topLeft.getNum() + topRight.getNum() + bottomLeft.getNum() + bottomRight.getNum();
+
+            if (coord.getMine() || sum > 0) {
+                coord.setNum(0);
+                minesLeft = 0;
+                placeMines();
+                restOfGrid();
+                handleLeftClick(coord, button);
+                return;
+            }
+            firstMove = false;
+
+        }
+
         if (coord.getUncovered()) { // already uncovered coord
             return;
         }
         if (coord.getMine()) {
+            button.setStyle("-fx-background-color: #ffd6d6");
             lostGame();
+            for (int i = 0; i < cols; i++) {
+                for (int j = 0; j < rows; j++) {
+                    mineGrid[i][j].setUncovered(true);
+                }
+            }
+            return;
         }
         coord.setUncovered(true);
-        button.setText(String.valueOf(coord.getNum()));
-        // if coord.getNum() is 0, uncover surrounding cells
+        if (coord.getNum() != 0) {
+            button.setText(String.valueOf(coord.getNum()));
+        }
+        coord.getButton().setStyle("-fx-background-color: #cfdfa8");
 
+        if (coord.getNum() == 0) { // uncover surrounding 0 cells
+            coord.getButton().setStyle("-fx-background-color: #e7f1fb");
+            Coord left;
+            Coord right;
+            Coord top;
+            Coord bottom;
+            Coord topLeft;
+            Coord topRight;
+            Coord bottomLeft;
+            Coord bottomRight;
+
+            if (coord.getCol() > 0) {
+                left = mineGrid[coord.getCol() - 1][coord.getRow()];
+                handleLeftClick(left, left.getButton());
+            }
+            if (coord.getCol() < cols - 1) {
+                right = mineGrid[coord.getCol() + 1][coord.getRow()];
+                handleLeftClick(right, right.getButton());
+            }
+            if (coord.getRow() > 0) {
+                top = mineGrid[coord.getCol()][coord.getRow() - 1];
+                handleLeftClick(top, top.getButton());
+            }
+            if (coord.getRow() < rows - 1) {
+                bottom = mineGrid[coord.getCol()][coord.getRow() + 1];
+                handleLeftClick(bottom, bottom.getButton());
+            }
+            if (coord.getCol() > 0 && coord.getRow() > 0) {
+                topLeft = mineGrid[coord.getCol() - 1][coord.getRow() - 1];
+                handleLeftClick(topLeft, topLeft.getButton());
+            }
+            if (coord.getCol() < cols - 1 && coord.getRow() > 0) {
+                topRight = mineGrid[coord.getCol() + 1][coord.getRow() - 1];
+                handleLeftClick(topRight, topRight.getButton());
+            }
+            if (coord.getCol() > 0 && coord.getRow() < rows - 1) {
+                bottomLeft = mineGrid[coord.getCol() - 1][coord.getRow() + 1];
+                handleLeftClick(bottomLeft, bottomLeft.getButton());
+            }
+            if (coord.getCol() < cols - 1 && coord.getRow() < rows - 1) {
+                bottomRight = mineGrid[coord.getCol() + 1][coord.getRow() + 1];
+                handleLeftClick(bottomRight, bottomRight.getButton());
+            }
+        }
         checkEndGame();
     }
 
@@ -394,7 +495,8 @@ public class GameController {
                         numOfMines++;
                     }
                 }
-                mineGrid[i][j] = new Coord(i, j, mineGrid[i][j].getMine(), numOfMines, false, false);
+                mineGrid[i][j] = new Coord(i, j, mineGrid[i][j].getMine(), numOfMines,
+                        false, false, mineGrid[i][j].getButton());
             }
         }
     }
@@ -406,19 +508,25 @@ public class GameController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Game Over");
         alert.setHeaderText("You hit a mine!");
+        alert.setContentText("Click [New] to play again");
         alert.showAndWait();
-        handleNewGame();
     }
 
     /**
      * game over dialog (won)
      */
     private void wonGame() {
-        Alert alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle("Game Over");
-        alert.setHeaderText("You won!");
-        alert.setContentText("Click [New] to play again");
-        alert.showAndWait();
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Game Over");
+        dialog.setHeaderText("You won!");
+        dialog.setContentText("Click [New] to play again");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.showAndWait();
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                mineGrid[i][j].setUncovered(true);
+            }
+        }
     }
 
     /**

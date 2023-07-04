@@ -1,14 +1,10 @@
 package me.julie.minesweeper.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import me.julie.minesweeper.Main;
 import me.julie.minesweeper.model.Coord;
 
@@ -29,6 +25,7 @@ public class GameController {
     private GridPane displayBoard;
     @FXML
     private VBox mainVbox;
+    private final Random random = new Random();
 
     /**
      * initializes minesweeper game
@@ -117,7 +114,6 @@ public class GameController {
      * place the mines randomly
      */
     public void placeMines() {
-        Random random = new Random();
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 int mine = random.nextInt(4);
@@ -235,6 +231,7 @@ public class GameController {
         }
         if (coord.getMine()) {
             button.setStyle("-fx-background-color: #ffd6d6");
+            button.setText("💣");
             lostGame();
             for (int i = 0; i < cols; i++) {
                 for (int j = 0; j < rows; j++) {
@@ -250,7 +247,24 @@ public class GameController {
         coord.getButton().setStyle("-fx-background-color: #cfdfa8");
 
         if (coord.getNum() == 0) { // uncover surrounding 0 cells
-            coord.getButton().setStyle("-fx-background-color: #e7f1fb");
+            switch (random.nextInt(4)) {
+                case 0:
+                    coord.getButton().setText("🌸");
+                    coord.getButton().setStyle("-fx-text-fill: #ea7171; -fx-background-color: #efe4f4");
+                    break;
+                case 1:
+                    coord.getButton().setText("🌻");
+                    coord.getButton().setStyle("-fx-text-fill: #d5ac36; -fx-background-color: #efe4f4");
+                    break;
+                case 2:
+                    coord.getButton().setText("🌼");
+                    coord.getButton().setStyle("-fx-text-fill: #692f87; -fx-background-color: #efe4f4");
+                    break;
+                default:
+                    coord.getButton().setText("🌷");
+                    coord.getButton().setStyle("-fx-text-fill: #a90707; -fx-background-color: #efe4f4");
+                    break;
+            }
             Coord left;
             Coord right;
             Coord top;
@@ -312,7 +326,7 @@ public class GameController {
             minesLeft++;
             minesLeftLabel.setText(String.valueOf(minesLeft));
         } else {
-            button.setText("X");
+            button.setText("🚩");
             coord.setFlagged(true);
             minesLeft--;
             minesLeftLabel.setText(String.valueOf(minesLeft));
